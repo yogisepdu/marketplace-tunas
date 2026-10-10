@@ -1,0 +1,357 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// =====================================================
+// ENUMS
+// =====================================================
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  EXPIRED
+  CANCELLED
+  FAILED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  SETTLEMENT
+  CAPTURE
+  EXPIRE
+  CANCEL
+  DENY
+  FAILURE
+  REFUND
+}
+
+enum PaymentType {
+  QRIS
+  BANK_TRANSFER
+  VIRTUAL_ACCOUNT
+  E_WALLET
+  CREDIT_CARD
+  OTHER
+}
+
+enum NotificationStatus {
+  PENDING
+  PROCESSING
+  SENT
+  FAILED
+}
+
+enum AccessStatus {
+  ACTIVE
+  REVOKED
+}
+
+enum DownloadStatus {
+  SUCCESS
+  FAILED
+}
+
+// =====================================================
+// CATALOG
+// =====================================================
+
+model StudyProgram {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(150)
+  code      String?  @unique @db.VarChar(50)
+  description String? @db.Text
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  courses Course[]
+
+  @@index([isActive])
+  @@map("study_programs")
+}
+
+model Course {
+  id             Int      @id @default(autoincrement())
+  studyProgramId Int
+  code           String   @db.VarChar(50)
+  name           String   @db.VarChar(200)
+  semester       Int?
+  credits        Int?
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  studyProgram StudyProgram @relation(fields: [studyProgramId], references: [id])
+  products     Product[]
+
+  @@unique([studyProgramId, code])
+  @@index([studyProgramId])
+  @@index([isActive])
+  @@map("courses")
+}
+
+model Product {
+  id          Int           @id @default(autoincrement())
+  courseId    Int
+  title       String        @db.VarChar(255)
+  slug        String        @unique @db.VarChar(255)
+  description String?       @db.Text
+  price       Decimal       @db.Decimal(12, 2)
+  thumbnail   String?       @db.VarChar(500)
+  status      ProductStatus @default(DRAFT)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  course       Course          @relation(fields: [courseId], references: [id])
+  productFiles ProductFile[]
+  orderItems   OrderItem[]
+  accesses     ProductAccess[]
+
+  @@index([courseId])
+  @@index([status])
+  @@map("products")
+}
+
+model ProductFile {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  fileName  String   @db.VarChar(255)
+  filePath  String   @db.VarChar(500)
+  fileSize  Int?
+  mimeType  String?  @db.VarChar(100)
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  downloads DownloadLog[]
+
+  @@index([productId])
+  @@map("product_files")
+}
+
+// =====================================================
+// CUSTOMER
+// =====================================================
+
+model Customer {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(150)
+  email     String   @db.VarChar(255)
+  whatsapp  String?  @db.VarChar(30)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders Order[]
+
+  @@index([email])
+  @@map("customers")
+}
+
+// =====================================================
+// ORDER
+// =====================================================
+
+model Order {
+  id             Int         @id @default(autoincrement())
+  orderNumber    String      @unique @db.VarChar(50)
+  customerId     Int
+  subtotal       Decimal     @db.Decimal(12, 2)
+  discountAmount Decimal     @default(0) @db.Decimal(12, 2)
+  totalAmount    Decimal     @db.Decimal(12, 2)
+  status         OrderStatus @default(PENDING)
+  paidAt         DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  customer           Customer            @relation(fields: [customerId], references: [id])
+  items              OrderItem[]
+  payments           Payment[]
+  productAccesses    ProductAccess[]
+  emailNotifications EmailNotification[]
+
+  @@index([customerId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id           Int      @id @default(autoincrement())
+  orderId      Int
+  productId    Int
+  productTitle String   @db.VarChar(255)
+  unitPrice    Decimal  @db.Decimal(12, 2)
+  quantity     Int      @default(1)
+  subtotal     Decimal  @db.Decimal(12, 2)
+  createdAt    DateTime @default(now())
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_items")
+}
+
+// =====================================================
+// PAYMENT / MIDTRANS
+// =====================================================
+
+model Payment {
+  id                   Int           @id @default(autoincrement())
+  orderId              Int
+  provider             String        @db.VarChar(50)
+  transactionId        String?       @unique @db.VarChar(150)
+  orderIdProvider      String?       @db.VarChar(150)
+  paymentType          PaymentType?
+  transactionStatus    PaymentStatus @default(PENDING)
+  grossAmount          Decimal       @db.Decimal(12, 2)
+  snapToken   String? @db.VarChar(255)
+  redirectUrl String? @db.VarChar(1000)
+  transactionTime      DateTime?
+  settlementTime       DateTime?
+  fraudStatus          String?       @db.VarChar(50)
+  signatureKeyVerified Boolean       @default(false)
+  rawResponse          String?       @db.Text
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  order         Order                 @relation(fields: [orderId], references: [id])
+  notifications PaymentNotification[]
+
+  @@index([orderId])
+  @@index([transactionStatus])
+  @@index([provider])
+  @@map("payments")
+}
+
+model PaymentNotification {
+  id                Int       @id @default(autoincrement())
+  paymentId         Int?
+  provider          String    @db.VarChar(50)
+  notificationKey   String?   @unique @db.VarChar(255)
+  transactionId     String?   @db.VarChar(150)
+  orderIdProvider   String?   @db.VarChar(150)
+  statusCode        String?   @db.VarChar(20)
+  transactionStatus String?   @db.VarChar(50)
+  fraudStatus       String?   @db.VarChar(50)
+  signatureValid    Boolean   @default(false)
+  payload           String    @db.Text
+  processedAt       DateTime?
+  createdAt         DateTime  @default(now())
+
+  payment Payment? @relation(fields: [paymentId], references: [id])
+
+  @@index([paymentId])
+  @@index([transactionId])
+  @@index([createdAt])
+  @@map("payment_notifications")
+}
+
+// =====================================================
+// DIGITAL PRODUCT ACCESS
+// =====================================================
+
+model ProductAccess {
+  id          Int          @id @default(autoincrement())
+  orderId     Int
+  productId   Int
+  accessToken String       @unique @db.VarChar(255)
+  status      AccessStatus @default(ACTIVE)
+  expiresAt   DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  order     Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product       @relation(fields: [productId], references: [id])
+  downloads DownloadLog[]
+
+  @@unique([orderId, productId])
+  @@index([productId])
+  @@index([status])
+  @@index([expiresAt])
+  @@map("product_accesses")
+}
+
+model DownloadLog {
+  id              Int            @id @default(autoincrement())
+  productAccessId Int
+  fileId          Int
+  ipAddress       String?        @db.VarChar(45)
+  userAgent       String?        @db.Text
+  status          DownloadStatus
+  createdAt       DateTime       @default(now())
+
+  productAccess ProductAccess @relation(fields: [productAccessId], references: [id], onDelete: Cascade)
+  file          ProductFile   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@index([productAccessId])
+  @@index([fileId])
+  @@index([createdAt])
+  @@map("download_logs")
+}
+
+// =====================================================
+// EMAIL NOTIFICATION
+// =====================================================
+
+model EmailNotification {
+  id        Int                @id @default(autoincrement())
+  orderId   Int
+  recipient String             @db.VarChar(255)
+  subject   String             @db.VarChar(255)
+  status    NotificationStatus @default(PENDING)
+  attempts  Int                @default(0)
+  sentAt    DateTime?
+  lastError String?            @db.Text
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([status])
+  @@map("email_notifications")
+}
+
+// =====================================================
+// ADMIN USER
+// =====================================================
+
+enum AdminRole {
+  ADMIN
+  EDITOR
+}
+
+enum AdminStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model AdminUser {
+  id           Int         @id @default(autoincrement())
+  name         String      @db.VarChar(150)
+  email        String      @unique @db.VarChar(255)
+  passwordHash String      @db.VarChar(255)
+  role         AdminRole   @default(EDITOR)
+  status       AdminStatus @default(ACTIVE)
+  lastLoginAt  DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([status])
+  @@index([role])
+  @@map("admin_users")
+}

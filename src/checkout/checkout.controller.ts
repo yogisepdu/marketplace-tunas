@@ -1,0 +1,23 @@
+import { Body, Controller, Post } from '@nestjs/common';
+
+import { CheckoutService } from './checkout.service';
+import { CreateCheckoutDto } from './dto/create-checkout.dto';
+
+@Controller('checkout')
+export class CheckoutController {
+  constructor(private readonly checkoutService: CheckoutService) {}
+
+  @Post()
+  async create(
+    @Body()
+    dto: CreateCheckoutDto,
+  ) {
+    const order = await this.checkoutService.create(dto);
+
+    return {
+      success: true,
+      message: 'Order berhasil dibuat',
+      data: order,
+    };
+  }
+}
