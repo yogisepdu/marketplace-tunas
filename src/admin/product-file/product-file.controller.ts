@@ -25,7 +25,7 @@ import { ProductFileService } from './product-file.service';
 import { CreateProductFileDto } from './dto/create-product-file.dto';
 import { UpdateProductFileDto } from './dto/update-product-file.dto';
 
-@Controller('api/admin/product-files')
+@Controller('admin/product-files')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN')
 export class ProductFileController {

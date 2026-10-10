@@ -3,7 +3,7 @@ import type { Request, Response } from 'express';
 
 import { DownloadService } from './download.service';
 
-@Controller('api/download')
+@Controller('download')
 export class DownloadController {
   constructor(private readonly downloadService: DownloadService) {}
 

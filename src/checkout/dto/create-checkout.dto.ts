@@ -1,4 +1,7 @@
+import { Type } from 'class-transformer';
+
 import {
+  IsArray,
   IsEmail,
   IsInt,
   IsNotEmpty,
@@ -6,7 +9,18 @@ import {
   IsString,
   MaxLength,
   Min,
+  ValidateNested,
 } from 'class-validator';
+
+export class CreateCheckoutItemDto {
+  @IsInt()
+  @Min(1)
+  productId: number;
+
+  @IsInt()
+  @Min(1)
+  quantity: number;
+}
 
 export class CreateCheckoutDto {
   @IsString()
@@ -23,11 +37,8 @@ export class CreateCheckoutDto {
   @MaxLength(30)
   whatsapp?: string;
 
-  @IsInt()
-  @Min(1)
-  productId: number;
-
-  @IsInt()
-  @Min(1)
-  quantity: number;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateCheckoutItemDto)
+  items: CreateCheckoutItemDto[];
 }

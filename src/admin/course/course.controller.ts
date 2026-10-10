@@ -18,7 +18,7 @@ import { CourseService } from './course.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 
-@Controller('api/admin/courses')
+@Controller('admin/courses')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN')
 export class CourseController {

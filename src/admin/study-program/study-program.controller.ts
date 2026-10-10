@@ -18,7 +18,7 @@ import { CreateStudyProgramDto } from './dto/create-study-program.dto';
 import { UpdateStudyProgramDto } from './dto/update-study-program.dto';
 import { StudyProgramService } from './study-program.service';
 
-@Controller('api/admin/study-programs')
+@Controller('admin/study-programs')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN')
 export class StudyProgramController {

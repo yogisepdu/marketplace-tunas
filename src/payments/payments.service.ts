@@ -15,11 +15,14 @@ import { PrismaService } from '../prisma/prisma.service';
 
 import { MidtransWebhookDto } from './dto/midtrans-webhook.dto';
 
+import { CheckoutTokenService } from '../checkout/checkout-token.service';
+
 @Injectable()
 export class PaymentsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
+    private readonly checkoutTokenService: CheckoutTokenService,
   ) {}
 
   /**
@@ -29,11 +32,24 @@ export class PaymentsService {
    *
    * Membuat sesi pembayaran Midtrans Snap
    * untuk sebuah order.
+   *
+   * POST:
+   * /api/payments/:orderNumber/snap
+   *
+   * Header:
+   * X-Checkout-Token: <token>
    */
-  async createSnapPayment(orderNumber: string) {
+  async createSnapPayment(orderNumber: string, checkoutToken?: string) {
     /**
      * ----------------------------------------------------------
-     * 1. Cari order
+     * 1. Validasi checkout token
+     * ----------------------------------------------------------
+     */
+    this.checkoutTokenService.verify(checkoutToken, orderNumber);
+
+    /**
+     * ----------------------------------------------------------
+     * 2. Cari order
      * ----------------------------------------------------------
      */
     const order = await this.prisma.order.findUnique({
@@ -58,7 +74,7 @@ export class PaymentsService {
 
     /**
      * ----------------------------------------------------------
-     * 2. Pastikan order masih PENDING
+     * 3. Pastikan order masih PENDING
      * ----------------------------------------------------------
      */
     if (order.status !== 'PENDING') {
@@ -69,7 +85,7 @@ export class PaymentsService {
 
     /**
      * ----------------------------------------------------------
-     * 3. Pastikan order memiliki item
+     * 4. Pastikan order memiliki item
      * ----------------------------------------------------------
      */
     if (!order.items.length) {
@@ -80,7 +96,7 @@ export class PaymentsService {
 
     /**
      * ----------------------------------------------------------
-     * 4. Validasi total pembayaran
+     * 5. Validasi total pembayaran
      * ----------------------------------------------------------
      */
     const grossAmount = Number(order.totalAmount);
@@ -91,7 +107,7 @@ export class PaymentsService {
 
     /**
      * ----------------------------------------------------------
-     * 5. Ambil konfigurasi Midtrans
+     * 6. Ambil konfigurasi Midtrans
      * ----------------------------------------------------------
      */
     const serverKey = this.configService.get<string>('MIDTRANS_SERVER_KEY');
@@ -110,7 +126,7 @@ export class PaymentsService {
 
     /**
      * ----------------------------------------------------------
-     * 6. Cek apakah Snap sebelumnya sudah dibuat
+     * 7. Cek apakah Snap sebelumnya sudah dibuat
      * ----------------------------------------------------------
      *
      * Jika sudah ada payment PENDING dengan Snap Token,
@@ -145,49 +161,41 @@ export class PaymentsService {
 
     /**
      * ----------------------------------------------------------
-     * 7. Buat instance Midtrans Snap
+     * 8. Buat instance Midtrans Snap
      * ----------------------------------------------------------
      */
     const snap = new midtransClient.Snap({
       isProduction,
-
       serverKey,
-
       clientKey,
     });
 
     /**
      * ----------------------------------------------------------
-     * 8. Buat item details
+     * 9. Buat item details
      * ----------------------------------------------------------
      */
     const itemDetails = order.items.map((item) => ({
       id: String(item.productId),
-
       price: Number(item.unitPrice),
-
       quantity: item.quantity,
-
       name: item.productTitle,
     }));
 
     /**
      * ----------------------------------------------------------
-     * 9. Parameter transaksi Midtrans
+     * 10. Parameter transaksi Midtrans
      * ----------------------------------------------------------
      */
     const parameter = {
       transaction_details: {
         order_id: order.orderNumber,
-
         gross_amount: grossAmount,
       },
 
       customer_details: {
         first_name: order.customer.name,
-
         email: order.customer.email,
-
         phone: order.customer.whatsapp ?? undefined,
       },
 
@@ -200,7 +208,7 @@ export class PaymentsService {
 
     /**
      * ----------------------------------------------------------
-     * 10. Create transaction
+     * 11. Create transaction
      * ----------------------------------------------------------
      */
     const transaction = await snap.createTransaction(parameter);
@@ -217,7 +225,7 @@ export class PaymentsService {
 
     /**
      * ----------------------------------------------------------
-     * 11. Simpan Payment
+     * 12. Simpan Payment
      * ----------------------------------------------------------
      */
     const payment = await this.prisma.payment.create({
@@ -242,17 +250,87 @@ export class PaymentsService {
 
     /**
      * ----------------------------------------------------------
-     * 12. Return
+     * 13. Return
+     * ----------------------------------------------------------
+     */
+    return {
+      orderNumber: order.orderNumber,
+      paymentId: payment.id,
+      snapToken,
+      redirectUrl,
+    };
+  }
+
+  /**
+   * ============================================================
+   * GET ORDER STATUS
+   * ============================================================
+   *
+   * GET:
+   * /api/payments/orders/:orderNumber
+   *
+   * Header:
+   * X-Checkout-Token: <token>
+   *
+   * Digunakan frontend untuk melakukan polling status order.
+   */
+  async getOrderStatus(orderNumber: string, checkoutToken?: string) {
+    /**
+     * ----------------------------------------------------------
+     * 1. Validasi checkout token
+     * ----------------------------------------------------------
+     */
+    this.checkoutTokenService.verify(checkoutToken, orderNumber);
+
+    /**
+     * ----------------------------------------------------------
+     * 2. Cari order
+     * ----------------------------------------------------------
+     */
+    const order = await this.prisma.order.findUnique({
+      where: {
+        orderNumber,
+      },
+
+      include: {
+        customer: true,
+        items: true,
+      },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Order tidak ditemukan');
+    }
+
+    /**
+     * ----------------------------------------------------------
+     * 3. Return status order
      * ----------------------------------------------------------
      */
     return {
       orderNumber: order.orderNumber,
 
-      paymentId: payment.id,
+      status: order.status,
 
-      snapToken,
+      totalAmount: Number(order.totalAmount),
 
-      redirectUrl,
+      customer: {
+        name: order.customer.name,
+        email: order.customer.email,
+        whatsapp: order.customer.whatsapp,
+      },
+
+      items: order.items.map((item) => ({
+        productId: item.productId,
+
+        productTitle: item.productTitle,
+
+        unitPrice: Number(item.unitPrice),
+
+        quantity: item.quantity,
+
+        subtotal: Number(item.subtotal),
+      })),
     };
   }
 
@@ -260,6 +338,10 @@ export class PaymentsService {
    * ============================================================
    * HANDLE MIDTRANS WEBHOOK
    * ============================================================
+   *
+   * Endpoint:
+   *
+   * POST /api/payments/webhook
    *
    * Fokus:
    *
@@ -396,11 +478,8 @@ export class PaymentsService {
      * 6. Cari order
      * ----------------------------------------------------------
      *
-     * PERBAIKAN PENTING:
-     *
-     * customer: true
-     *
-     * diperlukan untuk membuat EmailNotification.
+     * customer diperlukan untuk
+     * membuat EmailNotification.
      */
     const order = await this.prisma.order.findUnique({
       where: {
@@ -409,7 +488,6 @@ export class PaymentsService {
 
       include: {
         customer: true,
-
         items: true,
       },
     });
@@ -417,6 +495,7 @@ export class PaymentsService {
     if (!order) {
       /**
        * Notification valid tetapi order tidak dikenal.
+       *
        * Tetap simpan untuk audit.
        */
       await this.prisma.paymentNotification.upsert({
@@ -684,7 +763,6 @@ export class PaymentsService {
             where: {
               orderId_productId: {
                 orderId: order.id,
-
                 productId: item.productId,
               },
             },
@@ -744,11 +822,8 @@ export class PaymentsService {
          */
         await this.createEmailNotification(
           tx,
-
           order.id,
-
           order.customer.email,
-
           order.orderNumber,
         );
       }
@@ -892,7 +967,9 @@ export class PaymentsService {
       }
 
       /**
-       * Return hasil transaction.
+       * ----------------------------------------------------
+       * Return hasil transaction
+       * ----------------------------------------------------
        */
       return {
         payment,
@@ -946,7 +1023,9 @@ export class PaymentsService {
     const subject = `Pembelian berhasil - ${orderNumber}`;
 
     /**
-     * Cek apakah notification sudah ada.
+     * ----------------------------------------------------------
+     * Cek apakah notification sudah ada
+     * ----------------------------------------------------------
      */
     const existing = await tx.emailNotification.findFirst({
       where: {
@@ -967,7 +1046,9 @@ export class PaymentsService {
     }
 
     /**
-     * Buat notification baru.
+     * ----------------------------------------------------------
+     * Buat notification baru
+     * ----------------------------------------------------------
      */
     return tx.emailNotification.create({
       data: {

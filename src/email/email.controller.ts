@@ -2,7 +2,7 @@ import { Controller, Param, ParseIntPipe, Post } from '@nestjs/common';
 
 import { EmailService } from './email.service';
 
-@Controller('api/email')
+@Controller('email')
 export class EmailController {
   constructor(private readonly emailService: EmailService) {}
 
