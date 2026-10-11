@@ -15,5 +15,10 @@ export class UpdateStudyProgramDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(500)
+  image?: string;
+
+  @IsOptional()
+  @IsString()
   description?: string;
 }

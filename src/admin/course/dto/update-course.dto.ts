@@ -34,4 +34,9 @@ export class UpdateCourseDto {
   @IsInt()
   @Min(1)
   studyProgramId?: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  image?: string;
 }

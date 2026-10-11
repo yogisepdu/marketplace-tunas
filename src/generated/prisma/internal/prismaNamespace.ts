@@ -1331,6 +1331,7 @@ export const StudyProgramScalarFieldEnum = {
   name: 'name',
   code: 'code',
   description: 'description',
+  image: 'image',
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1346,6 +1347,7 @@ export const CourseScalarFieldEnum = {
   name: 'name',
   semester: 'semester',
   credits: 'credits',
+  image: 'image',
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1544,7 +1546,8 @@ export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 export const StudyProgramOrderByRelevanceFieldEnum = {
   name: 'name',
   code: 'code',
-  description: 'description'
+  description: 'description',
+  image: 'image'
 } as const
 
 export type StudyProgramOrderByRelevanceFieldEnum = (typeof StudyProgramOrderByRelevanceFieldEnum)[keyof typeof StudyProgramOrderByRelevanceFieldEnum]
@@ -1552,7 +1555,8 @@ export type StudyProgramOrderByRelevanceFieldEnum = (typeof StudyProgramOrderByR
 
 export const CourseOrderByRelevanceFieldEnum = {
   code: 'code',
-  name: 'name'
+  name: 'name',
+  image: 'image'
 } as const
 
 export type CourseOrderByRelevanceFieldEnum = (typeof CourseOrderByRelevanceFieldEnum)[keyof typeof CourseOrderByRelevanceFieldEnum]

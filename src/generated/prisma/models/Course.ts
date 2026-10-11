@@ -47,6 +47,7 @@ export type CourseMinAggregateOutputType = {
   name: string | null
   semester: number | null
   credits: number | null
+  image: string | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -59,6 +60,7 @@ export type CourseMaxAggregateOutputType = {
   name: string | null
   semester: number | null
   credits: number | null
+  image: string | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -71,6 +73,7 @@ export type CourseCountAggregateOutputType = {
   name: number
   semester: number
   credits: number
+  image: number
   isActive: number
   createdAt: number
   updatedAt: number
@@ -99,6 +102,7 @@ export type CourseMinAggregateInputType = {
   name?: true
   semester?: true
   credits?: true
+  image?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -111,6 +115,7 @@ export type CourseMaxAggregateInputType = {
   name?: true
   semester?: true
   credits?: true
+  image?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -123,6 +128,7 @@ export type CourseCountAggregateInputType = {
   name?: true
   semester?: true
   credits?: true
+  image?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -222,6 +228,7 @@ export type CourseGroupByOutputType = {
   name: string
   semester: number | null
   credits: number | null
+  image: string | null
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -257,6 +264,7 @@ export type CourseWhereInput = {
   name?: Prisma.StringFilter<"Course"> | string
   semester?: Prisma.IntNullableFilter<"Course"> | number | null
   credits?: Prisma.IntNullableFilter<"Course"> | number | null
+  image?: Prisma.StringNullableFilter<"Course"> | string | null
   isActive?: Prisma.BoolFilter<"Course"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Course"> | Date | string
@@ -271,6 +279,7 @@ export type CourseOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   semester?: Prisma.SortOrderInput | Prisma.SortOrder
   credits?: Prisma.SortOrderInput | Prisma.SortOrder
+  image?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -290,6 +299,7 @@ export type CourseWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Course"> | string
   semester?: Prisma.IntNullableFilter<"Course"> | number | null
   credits?: Prisma.IntNullableFilter<"Course"> | number | null
+  image?: Prisma.StringNullableFilter<"Course"> | string | null
   isActive?: Prisma.BoolFilter<"Course"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Course"> | Date | string
@@ -304,6 +314,7 @@ export type CourseOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   semester?: Prisma.SortOrderInput | Prisma.SortOrder
   credits?: Prisma.SortOrderInput | Prisma.SortOrder
+  image?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -324,6 +335,7 @@ export type CourseScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Course"> | string
   semester?: Prisma.IntNullableWithAggregatesFilter<"Course"> | number | null
   credits?: Prisma.IntNullableWithAggregatesFilter<"Course"> | number | null
+  image?: Prisma.StringNullableWithAggregatesFilter<"Course"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"Course"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Course"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Course"> | Date | string
@@ -334,6 +346,7 @@ export type CourseCreateInput = {
   name: string
   semester?: number | null
   credits?: number | null
+  image?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -348,6 +361,7 @@ export type CourseUncheckedCreateInput = {
   name: string
   semester?: number | null
   credits?: number | null
+  image?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -359,6 +373,7 @@ export type CourseUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   credits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -373,6 +388,7 @@ export type CourseUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   credits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -386,6 +402,7 @@ export type CourseCreateManyInput = {
   name: string
   semester?: number | null
   credits?: number | null
+  image?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -396,6 +413,7 @@ export type CourseUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   credits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -408,6 +426,7 @@ export type CourseUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   credits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -441,6 +460,7 @@ export type CourseCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   semester?: Prisma.SortOrder
   credits?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -460,6 +480,7 @@ export type CourseMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   semester?: Prisma.SortOrder
   credits?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -472,6 +493,7 @@ export type CourseMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   semester?: Prisma.SortOrder
   credits?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -558,6 +580,7 @@ export type CourseCreateWithoutStudyProgramInput = {
   name: string
   semester?: number | null
   credits?: number | null
+  image?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -570,6 +593,7 @@ export type CourseUncheckedCreateWithoutStudyProgramInput = {
   name: string
   semester?: number | null
   credits?: number | null
+  image?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -612,6 +636,7 @@ export type CourseScalarWhereInput = {
   name?: Prisma.StringFilter<"Course"> | string
   semester?: Prisma.IntNullableFilter<"Course"> | number | null
   credits?: Prisma.IntNullableFilter<"Course"> | number | null
+  image?: Prisma.StringNullableFilter<"Course"> | string | null
   isActive?: Prisma.BoolFilter<"Course"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Course"> | Date | string
@@ -622,6 +647,7 @@ export type CourseCreateWithoutProductsInput = {
   name: string
   semester?: number | null
   credits?: number | null
+  image?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -635,6 +661,7 @@ export type CourseUncheckedCreateWithoutProductsInput = {
   name: string
   semester?: number | null
   credits?: number | null
+  image?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -661,6 +688,7 @@ export type CourseUpdateWithoutProductsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   credits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -674,6 +702,7 @@ export type CourseUncheckedUpdateWithoutProductsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   credits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -685,6 +714,7 @@ export type CourseCreateManyStudyProgramInput = {
   name: string
   semester?: number | null
   credits?: number | null
+  image?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -695,6 +725,7 @@ export type CourseUpdateWithoutStudyProgramInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   credits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -707,6 +738,7 @@ export type CourseUncheckedUpdateWithoutStudyProgramInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   credits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -719,6 +751,7 @@ export type CourseUncheckedUpdateManyWithoutStudyProgramInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   semester?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   credits?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -762,6 +795,7 @@ export type CourseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name?: boolean
   semester?: boolean
   credits?: boolean
+  image?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -779,12 +813,13 @@ export type CourseSelectScalar = {
   name?: boolean
   semester?: boolean
   credits?: boolean
+  image?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CourseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "studyProgramId" | "code" | "name" | "semester" | "credits" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["course"]>
+export type CourseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "studyProgramId" | "code" | "name" | "semester" | "credits" | "image" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["course"]>
 export type CourseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   studyProgram?: boolean | Prisma.StudyProgramDefaultArgs<ExtArgs>
   products?: boolean | Prisma.Course$productsArgs<ExtArgs>
@@ -804,6 +839,7 @@ export type $CoursePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     name: string
     semester: number | null
     credits: number | null
+    image: string | null
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -1184,6 +1220,7 @@ export interface CourseFieldRefs {
   readonly name: Prisma.FieldRef<"Course", 'String'>
   readonly semester: Prisma.FieldRef<"Course", 'Int'>
   readonly credits: Prisma.FieldRef<"Course", 'Int'>
+  readonly image: Prisma.FieldRef<"Course", 'String'>
   readonly isActive: Prisma.FieldRef<"Course", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Course", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Course", 'DateTime'>

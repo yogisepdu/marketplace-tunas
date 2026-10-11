@@ -1,4 +1,11 @@
-import { IsInt, IsNotEmpty, IsString, MaxLength, Min } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 export class CreateCourseDto {
   @IsString()
@@ -22,4 +29,9 @@ export class CreateCourseDto {
   @IsInt()
   @Min(1)
   studyProgramId: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  image?: string;
 }

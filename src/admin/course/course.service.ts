@@ -28,6 +28,7 @@ export class CourseService {
             id: true,
             name: true,
             code: true,
+            image: true,
           },
         },
         _count: {
@@ -50,6 +51,7 @@ export class CourseService {
             id: true,
             name: true,
             code: true,
+            image: true,
           },
         },
         _count: {
@@ -98,6 +100,7 @@ export class CourseService {
         semester: dto.semester,
         credits: dto.credits,
         studyProgramId: dto.studyProgramId,
+        image: dto.image,
       },
       include: {
         studyProgram: {
@@ -105,6 +108,7 @@ export class CourseService {
             id: true,
             name: true,
             code: true,
+            image: true,
           },
         },
       },
@@ -181,6 +185,10 @@ export class CourseService {
         ...(dto.studyProgramId !== undefined && {
           studyProgramId: dto.studyProgramId,
         }),
+
+        ...(dto.image !== undefined && {
+          image: dto.image,
+        }),
       },
       include: {
         studyProgram: {
@@ -188,6 +196,7 @@ export class CourseService {
             id: true,
             name: true,
             code: true,
+            image: true,
           },
         },
       },

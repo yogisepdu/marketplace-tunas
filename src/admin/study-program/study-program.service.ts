@@ -66,6 +66,7 @@ export class StudyProgramService {
         name: dto.name,
         code: dto.code,
         description: dto.description,
+        image: dto.image,
       },
     });
 
@@ -110,6 +111,10 @@ export class StudyProgramService {
 
         ...(dto.description !== undefined && {
           description: dto.description,
+        }),
+
+        ...(dto.image !== undefined && {
+          image: dto.image,
         }),
       },
     });

@@ -69,13 +69,14 @@ enum DownloadStatus {
 // =====================================================
 
 model StudyProgram {
-  id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar(150)
-  code      String?  @unique @db.VarChar(50)
-  description String? @db.Text
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(150)
+  code        String?  @unique @db.VarChar(50)
+  description String?  @db.Text
+  image       String?  @db.VarChar(500)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   courses Course[]
 
@@ -90,6 +91,7 @@ model Course {
   name           String   @db.VarChar(200)
   semester       Int?
   credits        Int?
+  image          String?  @db.VarChar(500)
   isActive       Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt

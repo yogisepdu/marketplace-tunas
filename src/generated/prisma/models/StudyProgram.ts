@@ -39,6 +39,7 @@ export type StudyProgramMinAggregateOutputType = {
   name: string | null
   code: string | null
   description: string | null
+  image: string | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -49,6 +50,7 @@ export type StudyProgramMaxAggregateOutputType = {
   name: string | null
   code: string | null
   description: string | null
+  image: string | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -59,6 +61,7 @@ export type StudyProgramCountAggregateOutputType = {
   name: number
   code: number
   description: number
+  image: number
   isActive: number
   createdAt: number
   updatedAt: number
@@ -79,6 +82,7 @@ export type StudyProgramMinAggregateInputType = {
   name?: true
   code?: true
   description?: true
+  image?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -89,6 +93,7 @@ export type StudyProgramMaxAggregateInputType = {
   name?: true
   code?: true
   description?: true
+  image?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -99,6 +104,7 @@ export type StudyProgramCountAggregateInputType = {
   name?: true
   code?: true
   description?: true
+  image?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -196,6 +202,7 @@ export type StudyProgramGroupByOutputType = {
   name: string
   code: string | null
   description: string | null
+  image: string | null
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -229,6 +236,7 @@ export type StudyProgramWhereInput = {
   name?: Prisma.StringFilter<"StudyProgram"> | string
   code?: Prisma.StringNullableFilter<"StudyProgram"> | string | null
   description?: Prisma.StringNullableFilter<"StudyProgram"> | string | null
+  image?: Prisma.StringNullableFilter<"StudyProgram"> | string | null
   isActive?: Prisma.BoolFilter<"StudyProgram"> | boolean
   createdAt?: Prisma.DateTimeFilter<"StudyProgram"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"StudyProgram"> | Date | string
@@ -240,6 +248,7 @@ export type StudyProgramOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   code?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  image?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -255,6 +264,7 @@ export type StudyProgramWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.StudyProgramWhereInput | Prisma.StudyProgramWhereInput[]
   name?: Prisma.StringFilter<"StudyProgram"> | string
   description?: Prisma.StringNullableFilter<"StudyProgram"> | string | null
+  image?: Prisma.StringNullableFilter<"StudyProgram"> | string | null
   isActive?: Prisma.BoolFilter<"StudyProgram"> | boolean
   createdAt?: Prisma.DateTimeFilter<"StudyProgram"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"StudyProgram"> | Date | string
@@ -266,6 +276,7 @@ export type StudyProgramOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   code?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  image?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -284,6 +295,7 @@ export type StudyProgramScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"StudyProgram"> | string
   code?: Prisma.StringNullableWithAggregatesFilter<"StudyProgram"> | string | null
   description?: Prisma.StringNullableWithAggregatesFilter<"StudyProgram"> | string | null
+  image?: Prisma.StringNullableWithAggregatesFilter<"StudyProgram"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"StudyProgram"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"StudyProgram"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"StudyProgram"> | Date | string
@@ -293,6 +305,7 @@ export type StudyProgramCreateInput = {
   name: string
   code?: string | null
   description?: string | null
+  image?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -304,6 +317,7 @@ export type StudyProgramUncheckedCreateInput = {
   name: string
   code?: string | null
   description?: string | null
+  image?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -314,6 +328,7 @@ export type StudyProgramUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -325,6 +340,7 @@ export type StudyProgramUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -336,6 +352,7 @@ export type StudyProgramCreateManyInput = {
   name: string
   code?: string | null
   description?: string | null
+  image?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -345,6 +362,7 @@ export type StudyProgramUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -355,6 +373,7 @@ export type StudyProgramUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -371,6 +390,7 @@ export type StudyProgramCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   code?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -385,6 +405,7 @@ export type StudyProgramMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   code?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -395,6 +416,7 @@ export type StudyProgramMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   code?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -451,6 +473,7 @@ export type StudyProgramCreateWithoutCoursesInput = {
   name: string
   code?: string | null
   description?: string | null
+  image?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -461,6 +484,7 @@ export type StudyProgramUncheckedCreateWithoutCoursesInput = {
   name: string
   code?: string | null
   description?: string | null
+  image?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -486,6 +510,7 @@ export type StudyProgramUpdateWithoutCoursesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -496,6 +521,7 @@ export type StudyProgramUncheckedUpdateWithoutCoursesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -537,6 +563,7 @@ export type StudyProgramSelect<ExtArgs extends runtime.Types.Extensions.Internal
   name?: boolean
   code?: boolean
   description?: boolean
+  image?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -551,12 +578,13 @@ export type StudyProgramSelectScalar = {
   name?: boolean
   code?: boolean
   description?: boolean
+  image?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type StudyProgramOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "code" | "description" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["studyProgram"]>
+export type StudyProgramOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "code" | "description" | "image" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["studyProgram"]>
 export type StudyProgramInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   courses?: boolean | Prisma.StudyProgram$coursesArgs<ExtArgs>
   _count?: boolean | Prisma.StudyProgramCountOutputTypeDefaultArgs<ExtArgs>
@@ -572,6 +600,7 @@ export type $StudyProgramPayload<ExtArgs extends runtime.Types.Extensions.Intern
     name: string
     code: string | null
     description: string | null
+    image: string | null
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -949,6 +978,7 @@ export interface StudyProgramFieldRefs {
   readonly name: Prisma.FieldRef<"StudyProgram", 'String'>
   readonly code: Prisma.FieldRef<"StudyProgram", 'String'>
   readonly description: Prisma.FieldRef<"StudyProgram", 'String'>
+  readonly image: Prisma.FieldRef<"StudyProgram", 'String'>
   readonly isActive: Prisma.FieldRef<"StudyProgram", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"StudyProgram", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"StudyProgram", 'DateTime'>
