@@ -1,18 +1,12 @@
 import {
-  IsEnum,
+  IsIn,
   IsInt,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   MaxLength,
   Min,
 } from 'class-validator';
-
-export enum ProductStatusDto {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
-}
 
 export class CreateProductDto {
   @IsInt()
@@ -31,13 +25,19 @@ export class CreateProductDto {
 
   @IsOptional()
   @IsString()
-  description?: string;
-
-  @IsNumber()
-  @Min(0)
-  price: number;
+  description?: string | null;
 
   @IsOptional()
-  @IsEnum(ProductStatusDto)
-  status?: ProductStatusDto;
+  @IsInt()
+  @Min(0)
+  price?: number | null;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(1000)
+  thumbnail?: string | null;
+
+  @IsOptional()
+  @IsIn(['DRAFT', 'ACTIVE', 'INACTIVE'])
+  status?: 'DRAFT' | 'ACTIVE' | 'INACTIVE';
 }

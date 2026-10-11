@@ -3,7 +3,9 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+
 import { PrismaService } from '../../prisma/prisma.service';
+
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
@@ -105,9 +107,10 @@ export class ProductService {
         courseId: dto.courseId,
         title: dto.title,
         slug: dto.slug,
-        description: dto.description,
-        price: dto.price,
-        status: dto.status ?? 'ACTIVE',
+        description: dto.description ?? null,
+        price: dto.price ?? 0,
+        thumbnail: dto.thumbnail ?? null,
+        status: dto.status ?? 'DRAFT',
       },
       include: {
         course: {
@@ -116,6 +119,7 @@ export class ProductService {
             code: true,
             name: true,
             semester: true,
+            credits: true,
             studyProgram: {
               select: {
                 id: true,
@@ -140,6 +144,10 @@ export class ProductService {
       throw new NotFoundException('Produk tidak ditemukan');
     }
 
+    /*
+     * Jika courseId diubah, pastikan mata kuliah
+     * tujuan memang ada.
+     */
     if (dto.courseId !== undefined) {
       const course = await this.prisma.course.findUnique({
         where: {
@@ -152,6 +160,9 @@ export class ProductService {
       }
     }
 
+    /*
+     * Pastikan slug tidak bentrok dengan produk lain.
+     */
     if (dto.slug !== undefined && dto.slug !== existing.slug) {
       const duplicate = await this.prisma.product.findUnique({
         where: {
@@ -159,40 +170,61 @@ export class ProductService {
         },
       });
 
-      if (duplicate) {
+      if (duplicate && duplicate.id !== id) {
         throw new ConflictException('Slug produk sudah digunakan');
       }
+    }
+
+    /*
+     * Susun data update.
+     *
+     * courseId tidak langsung dikirim sebagai
+     * field scalar agar kompatibel dengan Prisma
+     * relation yang digunakan generated client.
+     */
+    const data: any = {
+      ...(dto.title !== undefined && {
+        title: dto.title,
+      }),
+
+      ...(dto.slug !== undefined && {
+        slug: dto.slug,
+      }),
+
+      ...(dto.description !== undefined && {
+        description: dto.description,
+      }),
+
+      ...(dto.price !== undefined && {
+        price: dto.price,
+      }),
+
+      ...(dto.thumbnail !== undefined && {
+        thumbnail: dto.thumbnail,
+      }),
+
+      ...(dto.status !== undefined && {
+        status: dto.status,
+      }),
+    };
+
+    /*
+     * Hubungkan produk ke mata kuliah baru
+     * menggunakan relation Prisma.
+     */
+    if (dto.courseId !== undefined) {
+      data.course = {
+        connect: {
+          id: dto.courseId,
+        },
+      };
     }
 
     return this.prisma.product.update({
       where: {
         id,
       },
-      data: {
-        ...(dto.courseId !== undefined && {
-          courseId: dto.courseId,
-        }),
-
-        ...(dto.title !== undefined && {
-          title: dto.title,
-        }),
-
-        ...(dto.slug !== undefined && {
-          slug: dto.slug,
-        }),
-
-        ...(dto.description !== undefined && {
-          description: dto.description,
-        }),
-
-        ...(dto.price !== undefined && {
-          price: dto.price,
-        }),
-
-        ...(dto.status !== undefined && {
-          status: dto.status,
-        }),
-      },
+      data,
       include: {
         course: {
           select: {

@@ -1,24 +1,25 @@
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class UpdateStudyProgramDto {
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  @MaxLength(150)
+  @MaxLength(255)
   name?: string;
 
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  @MaxLength(50)
-  code?: string;
+  @MaxLength(100)
+  code?: string | null;
 
   @IsOptional()
   @IsString()
-  @MaxLength(500)
-  image?: string;
+  description?: string | null;
 
   @IsOptional()
   @IsString()
-  description?: string;
+  image?: string | null;
+
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
 }

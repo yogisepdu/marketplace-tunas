@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -33,5 +34,9 @@ export class CreateCourseDto {
   @IsOptional()
   @IsString()
   @MaxLength(500)
-  image?: string;
+  image?: string | null;
+
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
 }

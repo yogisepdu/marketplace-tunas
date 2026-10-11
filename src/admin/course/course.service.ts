@@ -5,12 +5,17 @@ import {
 } from '@nestjs/common';
 
 import { PrismaService } from '../../prisma/prisma.service';
+import { StorageService } from '../../storage/storage.service';
+
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 
 @Injectable()
 export class CourseService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly storageService: StorageService,
+  ) {}
 
   async findAll() {
     return this.prisma.course.findMany({
@@ -31,6 +36,7 @@ export class CourseService {
             image: true,
           },
         },
+
         _count: {
           select: {
             products: true,
@@ -45,6 +51,7 @@ export class CourseService {
       where: {
         id,
       },
+
       include: {
         studyProgram: {
           select: {
@@ -54,6 +61,7 @@ export class CourseService {
             image: true,
           },
         },
+
         _count: {
           select: {
             products: true,
@@ -70,6 +78,7 @@ export class CourseService {
   }
 
   async create(dto: CreateCourseDto) {
+    // Pastikan program studi tersedia.
     const studyProgram = await this.prisma.studyProgram.findUnique({
       where: {
         id: dto.studyProgramId,
@@ -80,6 +89,8 @@ export class CourseService {
       throw new NotFoundException('Program studi tidak ditemukan');
     }
 
+    // Cek kode mata kuliah agar tidak duplikat
+    // pada program studi yang sama.
     const existingCode = await this.prisma.course.findUnique({
       where: {
         studyProgramId_code: {
@@ -93,15 +104,22 @@ export class CourseService {
       throw new ConflictException('Kode mata kuliah sudah digunakan');
     }
 
-    return this.prisma.course.create({
+    const course = await this.prisma.course.create({
       data: {
         code: dto.code,
         name: dto.name,
-        semester: dto.semester,
-        credits: dto.credits,
+
+        semester: dto.semester ?? null,
+        credits: dto.credits ?? null,
+
         studyProgramId: dto.studyProgramId,
-        image: dto.image,
+
+        image: dto.image ?? null,
+
+        // Default aktif jika tidak dikirim.
+        isActive: dto.isActive ?? true,
       },
+
       include: {
         studyProgram: {
           select: {
@@ -113,6 +131,8 @@ export class CourseService {
         },
       },
     });
+
+    return course;
   }
 
   async update(id: number, dto: UpdateCourseDto) {
@@ -126,7 +146,12 @@ export class CourseService {
       throw new NotFoundException('Mata kuliah tidak ditemukan');
     }
 
-    if (dto.code && dto.code !== existing.code) {
+    /*
+     * ============================================================
+     * CEK KODE MATA KULIAH
+     * ============================================================
+     */
+    if (dto.code !== undefined && dto.code !== existing.code) {
       const targetStudyProgramId =
         dto.studyProgramId ?? existing.studyProgramId;
 
@@ -139,13 +164,18 @@ export class CourseService {
         },
       });
 
-      if (duplicate) {
+      if (duplicate && duplicate.id !== id) {
         throw new ConflictException(
           'Kode mata kuliah sudah digunakan pada program studi tersebut',
         );
       }
     }
 
+    /*
+     * ============================================================
+     * CEK PROGRAM STUDI
+     * ============================================================
+     */
     if (
       dto.studyProgramId !== undefined &&
       dto.studyProgramId !== existing.studyProgramId
@@ -161,10 +191,29 @@ export class CourseService {
       }
     }
 
-    return this.prisma.course.update({
+    /*
+     * ============================================================
+     * HAPUS GAMBAR LAMA JIKA DIGANTI
+     * ============================================================
+     */
+    if (
+      dto.image !== undefined &&
+      dto.image !== existing.image &&
+      existing.image
+    ) {
+      await this.storageService.deleteImageByUrl(existing.image);
+    }
+
+    /*
+     * ============================================================
+     * UPDATE DATA
+     * ============================================================
+     */
+    const course = await this.prisma.course.update({
       where: {
         id,
       },
+
       data: {
         ...(dto.code !== undefined && {
           code: dto.code,
@@ -189,7 +238,16 @@ export class CourseService {
         ...(dto.image !== undefined && {
           image: dto.image,
         }),
+
+        /*
+         * INI YANG MEMBUAT CHECKBOX
+         * "Mata kuliah aktif" BENAR-BENAR BERFUNGSI.
+         */
+        ...(dto.isActive !== undefined && {
+          isActive: dto.isActive,
+        }),
       },
+
       include: {
         studyProgram: {
           select: {
@@ -201,6 +259,8 @@ export class CourseService {
         },
       },
     });
+
+    return course;
   }
 
   async remove(id: number) {
@@ -212,6 +272,14 @@ export class CourseService {
 
     if (!existing) {
       throw new NotFoundException('Mata kuliah tidak ditemukan');
+    }
+
+    /*
+     * Hapus gambar dari storage sebelum menghapus
+     * record mata kuliah.
+     */
+    if (existing.image) {
+      await this.storageService.deleteImageByUrl(existing.image);
     }
 
     await this.prisma.course.delete({
