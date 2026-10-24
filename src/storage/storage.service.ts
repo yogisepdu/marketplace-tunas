@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { randomUUID } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { mkdir, unlink } from 'node:fs/promises';
 import { extname, join, resolve } from 'node:path';
-import { randomUUID } from 'node:crypto';
 
 @Injectable()
 export class StorageService {
@@ -12,11 +12,12 @@ export class StorageService {
 
   constructor(private readonly configService: ConfigService) {
     const configuredPath =
-      this.configService.get<string>('PUBLIC_STORAGE_PATH') ?? './storage/public/images';
+      this.configService.get<string>('PUBLIC_STORAGE_PATH') ??
+      './storage/public/images';
 
     this.publicImageDir = resolve(process.cwd(), configuredPath);
     this.appUrl = (
-      this.configService.get<string>('APP_URL') ?? 'http://localhost:3000'
+      this.configService.get<string>('APP_URL') ?? 'http://localhost:3000/'
     ).replace(/\/$/, '');
   }
 
@@ -25,11 +26,7 @@ export class StorageService {
       throw new BadRequestException('File gambar wajib diupload');
     }
 
-    const allowedMimeTypes = new Set([
-      'image/jpeg',
-      'image/png',
-      'image/webp',
-    ]);
+    const allowedMimeTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
     if (!allowedMimeTypes.has(file.mimetype)) {
       throw new BadRequestException(
@@ -43,7 +40,9 @@ export class StorageService {
 
     await mkdir(this.publicImageDir, { recursive: true });
 
-    const extension = this.extensionFromMimeType(file.mimetype) ?? extname(file.originalname).toLowerCase();
+    const extension =
+      this.extensionFromMimeType(file.mimetype) ??
+      extname(file.originalname).toLowerCase();
     const filename = `${randomUUID()}${extension}`;
     const absolutePath = join(this.publicImageDir, filename);
 
@@ -65,7 +64,12 @@ export class StorageService {
     if (index === -1) return;
 
     const filename = decodeURIComponent(url.slice(index + marker.length));
-    if (!filename || filename.includes('/') || filename.includes('\\') || filename.includes('..')) {
+    if (
+      !filename ||
+      filename.includes('/') ||
+      filename.includes('\\') ||
+      filename.includes('..')
+    ) {
       return;
     }
 
@@ -77,7 +81,12 @@ export class StorageService {
   }
 
   getPublicImagePath(filename: string) {
-    if (!filename || filename.includes('/') || filename.includes('\\') || filename.includes('..')) {
+    if (
+      !filename ||
+      filename.includes('/') ||
+      filename.includes('\\') ||
+      filename.includes('..')
+    ) {
       throw new BadRequestException('Nama file tidak valid');
     }
 
